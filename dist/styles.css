@@ -3,3 +3,16 @@
   margin: 0;
   box-sizing: border-box;
 }
+
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  font-family: 'Caveat', cursive;
+}
+
+button {
+  font-family: inherit;
+}
