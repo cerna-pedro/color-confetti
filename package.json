@@ -1,0 +1,24 @@
+{
+  "name": "Color_Of_The_Year_Confetti",
+  "version": "1.0.0",
+  "description": "This is an app I made to experiment with canvas and confetti, while showcasing the colors of the year from the past decade.",
+  "main": "index.js",
+  "scripts": {
+    "deploy": "gh-pages -d dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cerna-pedro/color-confetti.git"
+  },
+  "keywords": [],
+  "author": "Pedro Cerna",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cerna-pedro/color-confetti/issues"
+  },
+  "homepage": "https://cerna-pedro.github.io/color-confetti",
+  "dependencies": {
+    "gh-pages": "^2.2.0"
+  }
+}
