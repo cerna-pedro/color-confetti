@@ -1,15 +1,14 @@
 let canvas = document.querySelector("canvas");
-let paragraph = document.querySelector("#for-2016");
-let button = document.querySelector("#button");
+canvas.height = window.innerHeight;
+canvas.width = window.innerWidth;
 function resizeCanvas() {
   canvas.height = window.innerHeight;
   canvas.width = window.innerWidth;
 }
-window.addEventListener("DOMContentLoaded", resizeCanvas);
 window.addEventListener("resize", resizeCanvas);
 let ctx = canvas.getContext("2d");
 let bunch = [];
-let confettiNumber = 40;
+let confettiNumber = 800;
 let colorOfYear = [
   {
     year: 2010,
@@ -38,45 +37,85 @@ function colorIterator(data) {
   };
 }
 const yearColor = colorIterator(colorOfYear);
-let confettiColor = "";
+let confettiColor;
 function nextColor() {
-  const current = yearColor.next().value;
-  confettiColor = current.color;
-  setTimeout(() => {
-    button.innerText = current.year;
-  }, 1000);
-}
-console.log(confettiColor);
-nextColor();
+  const current = yearColor.next();
 
-button.addEventListener("click", nextColor);
+  const currentValue = current.value;
 
-class Confetti {
-  constructor(x, y) {
-    this.x = x;
-    this.y = y;
-    this.size = (Math.random() + 0.5) * 10;
-    this.gravity = (Math.random() + 0.5) * 10;
-    this.rotation = Math.PI * 2 * Math.random();
-    this.rotationSpeed = Math.PI * 2 * Math.random();
-    this.color = colorPicker();
+  if (currentValue === undefined) {
+    window.location.reload();
   }
+  document.querySelector("#for-year").innerText = `
+  That was ${currentValue.year}
+  Tap the screen to continue`;
+  currentValue.year === 2016
+    ? (document.querySelector("#for-year").innerText = `
+  That was part of ${currentValue.year}
+  ${currentValue.year} had 2 Colors!
+  Tap the screen to continue`)
+    : `
+  That was ${currentValue.year}
+  Tap the screen to continue`;
+  currentValue.year === 2020
+    ? (document.querySelector("#for-year").innerText = `
+  That was ${currentValue.year}
+  Tap the screen to start all over again`)
+    : `
+  That was ${currentValue.year}
+  Tap the screen to continue`;
+
+  confettiColor = currentValue.color;
+  class Confetti {
+    constructor(x, y) {
+      this.x = x;
+      this.y = y;
+      this.size = Math.random() * 25;
+      this.gravity = Math.random() + 0.3;
+      this.rotation = Math.PI * 2 * Math.random() * 0.0001;
+      this.rotationSpeed = Math.PI * 2 * Math.random() * 0.001;
+      this.color = confettiColor;
+    }
+  }
+  while (bunch.length < confettiNumber) {
+    bunch.push(new Confetti(Math.random() * canvas.width, -200));
+  }
+  update();
+  drawConfetti();
 }
 
-// function update() {
-//   requestAnimationFrame(update);
-// }
-// function draw() {
-//   ctx.clearRect(0, 0, canvas.width, canvas.height);
-//   bunch.forEach(function(c) {
-//     ctx.save();
-//     ctx.fillStyle = c.color;
-//     ctx.translate(c.x + c.size / 2, c.y + c.size / 2);
-//     ctx.rotate(c.rotation);
-//     ctx.fillRect(-c.size / 2, -c.size / 2, c.size, c.size);
-//   });
-// }
-// if (bunch.length < confettiNumber) {
-//   bunch.push(new Confetti(Math.random() * canvas.width, 0));
-// }
-// update();
+document.addEventListener("click", nextColor);
+
+let lastUpdateTime = Date.now();
+function update() {
+  let now = Date.now();
+
+  let dt = now - lastUpdateTime;
+  for (let i = bunch.length - 1; i >= 0; i--) {
+    let c = bunch[i];
+
+    if (c.y > canvas.height) {
+      bunch.splice(i, 1);
+      continue;
+    }
+    c.y += c.gravity * dt;
+    c.rotation += c.rotationSpeed * dt;
+  }
+  lastUpdateTime = now;
+  setTimeout(update, 1);
+}
+
+function drawConfetti() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  bunch.forEach(c => {
+    ctx.save();
+    ctx.fillStyle = c.color;
+    ctx.translate(c.x + c.size / 2, c.y + c.size / 2);
+    ctx.rotate(c.rotation);
+    ctx.fillRect(-c.size / 2, -c.size / 2, c.size, c.size);
+    ctx.restore();
+  });
+  requestAnimationFrame(drawConfetti);
+}
+
+nextColor();
